@@ -3,7 +3,6 @@ use chrono::Utc;
 
 use sqlx::PgPool;
 
-use tracing::Instrument;
 use uuid::Uuid;
 
 #[derive(serde::Deserialize)]
@@ -20,6 +19,7 @@ pub struct SubscribeFormData {
         subscriber_name = %form.name,
     )
 )]
+#[allow(clippy::async_yields_async)]
 pub async fn subscribe(
     form: web::Form<SubscribeFormData>,
     connection_pool: web::Data<PgPool>,
@@ -34,6 +34,7 @@ pub async fn subscribe(
     name = "Saving new subscriber details in the database",
     skip(connection_pool, form)
 )]
+#[allow(clippy::async_yields_async)]
 pub async fn insert_subscriber(
     connection_pool: &PgPool,
     form: &SubscribeFormData,
