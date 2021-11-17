@@ -1,8 +1,7 @@
-
 use actix_web::{web, HttpResponse};
 use chrono::Utc;
 
-use sqlx::{PgPool};
+use sqlx::PgPool;
 
 use uuid::Uuid;
 
@@ -27,11 +26,12 @@ pub async fn subscribe(
         Utc::now(),
     )
     .execute(connection_pool.get_ref())
-    .await {
-      Ok(_) => HttpResponse::Ok().finish(),
-      Err(e) => {
-        println!("failed to execute query: {}", e);
-        HttpResponse::InternalServerError().finish()
-      }
+    .await
+    {
+        Ok(_) => HttpResponse::Ok().finish(),
+        Err(e) => {
+            println!("failed to execute query: {}", e);
+            HttpResponse::InternalServerError().finish()
+        }
     }
 }

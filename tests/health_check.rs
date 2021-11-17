@@ -1,7 +1,7 @@
 use sqlx::{Connection, Executor, PgConnection, PgPool};
-use uuid::Uuid;
 use std::net::TcpListener;
-use zero2prod::configuration::{DatabaseSettings, get_configuration};
+use uuid::Uuid;
+use zero2prod::configuration::{get_configuration, DatabaseSettings};
 
 #[actix_rt::test]
 async fn health_check_works() {
@@ -88,13 +88,13 @@ async fn spawn_app() -> TestApp {
         .port();
 
     let address = format!("http://127.0.0.1:{}", port);
-    let mut configuration = get_configuration()
-        .expect("failed to read configuration");
+    let mut configuration = get_configuration().expect("failed to read configuration");
     configuration.database.database_name = Uuid::new_v4().to_string();
 
     let connection_pool = configure_database(&configuration.database).await;
 
-    let server = zero2prod::startup::run(listener, connection_pool.clone()).expect("failed to bind address");
+    let server =
+        zero2prod::startup::run(listener, connection_pool.clone()).expect("failed to bind address");
 
     let _ = tokio::spawn(server);
 
@@ -110,11 +110,7 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
         .expect("failed to connect to Postgres");
 
     connection
-        .execute(format!(
-            r#"CREATE DATABASE "{}";"#,
-            config.database_name
-        )
-        .as_str())
+        .execute(format!(r#"CREATE DATABASE "{}";"#, config.database_name).as_str())
         .await
         .expect("failed to create database");
 
