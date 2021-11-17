@@ -36,11 +36,12 @@ tracing-actix-web = "0.4.0-beta.12"
 version = "0.5.9"
 default-features = false
 features = [
-  "runtime-actix-rustls",
-  "macros",
-  "postgres",
-  "uuid",
-  "chrono",
-  "migrate",
+    "runtime-actix-rustls",
+    "macros",
+    "postgres",
+    "uuid",
+    "chrono",
+    "migrate",
+    "offline"
 ]
 
