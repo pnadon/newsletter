@@ -9,6 +9,7 @@ use newsletter::{
   telemetry::{get_subscriber, init_subscriber},
 };
 
+// This ensures that the global logger is only configured and initialized once.
 pub static TRACING: Lazy<()> = Lazy::new(|| {
   let default_filter_level = "info".to_string();
   let subscriber_name = "test".to_string();
@@ -21,11 +22,13 @@ pub static TRACING: Lazy<()> = Lazy::new(|| {
   }
 });
 
+/// Represents a collection of both a plaintext and html version of a confirmation link.
 pub struct ConfirmationLinks {
   pub html: reqwest::Url,
   pub plain_text: reqwest::Url,
 }
 
+/// A convenient struct for testing the application.
 pub struct TestApp {
   pub address: String,
   pub port: u16,
@@ -35,6 +38,7 @@ pub struct TestApp {
 }
 
 impl TestApp {
+  /// POST to the /subscriptions endpoint.
   pub async fn post_subscriptions(&self, body: String) -> reqwest::Response {
     reqwest::Client::new()
       .post(&format!("{}/subscriptions", &self.address))
@@ -45,6 +49,7 @@ impl TestApp {
       .expect("failed to execute request")
   }
 
+  /// POST to the /newsletters endpoint.
   pub async fn post_newsletters(&self, body: serde_json::Value) -> reqwest::Response {
     reqwest::Client::new()
       .post(&format!("{}/newsletters", &self.address))
@@ -55,6 +60,7 @@ impl TestApp {
       .expect("Failed to execute request.")
   }
 
+  /// Parse the confirmation links from the given mock request.
   pub fn get_confirmation_links(&self, email_request: &wiremock::Request) -> ConfirmationLinks {
     let body: serde_json::Value = serde_json::from_slice(&email_request.body).unwrap();
 
@@ -68,7 +74,9 @@ impl TestApp {
       let raw_link = links[0].as_str();
 
       let mut confirmation_link = reqwest::Url::parse(raw_link).unwrap();
+      // Want to make sure we are testing locally and aren't firing off requests to random servers.
       assert_eq!(confirmation_link.host_str().unwrap(), "127.0.0.1");
+      // Hack to ensure that we are using the same port as the test application.
       confirmation_link.set_port(Some(self.port)).unwrap();
       confirmation_link
     };
@@ -87,6 +95,7 @@ pub async fn spawn_app() -> TestApp {
 
   let configuration = {
     let mut c = get_configuration().expect("failed to read configuration");
+    // Random database name so that tests don't clash.
     c.database.database_name = Uuid::new_v4().to_string();
     c.email_client.base_url = email_server.uri();
     c.application.port = 0;

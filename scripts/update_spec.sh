@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
+# Retrieves credentials from Vault and embeds them in the DigitalOcean Spec file.
+# The spec file is then used to update the app's specification on the cloud.
+
 if [[ -z "${VAULT_ADDR}" ]]; then
   echo "VAULT_ADDR must be set!"
   exit 1

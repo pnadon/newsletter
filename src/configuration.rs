@@ -33,6 +33,7 @@ pub struct ApplicationSettings {
 }
 
 impl DatabaseSettings {
+  /// Allows us to customize the database's name, for debugging purposes.
   pub fn without_db(&self) -> PgConnectOptions {
     let ssl_mode = if self.require_ssl {
       PgSslMode::Require
@@ -76,6 +77,7 @@ impl EmailClientSettings {
   }
 }
 
+/// Merges the base.yaml with the environment-specific config file, and then merges in the environment variables.
 pub fn get_configuration() -> Result<Settings, config::ConfigError> {
   let mut settings = config::Config::default();
 

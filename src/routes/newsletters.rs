@@ -14,18 +14,23 @@ use crate::{
   telemetry::spawn_blocking_with_tracing,
 };
 
+/// Data contained in the body of the request.
+/// The request is for Postmark's API, and thus title corresponds
+/// to the email subject, and content corresponds to the email's body.
 #[derive(Deserialize)]
 pub struct BodyData {
   title: String,
   content: Content,
 }
 
+/// Content of the email, which is in plaintext and/or html.
 #[derive(Deserialize)]
 pub struct Content {
   html: String,
   text: String,
 }
 
+/// Errors which may occur during the publishing step.
 #[derive(thiserror::Error)]
 pub enum PublishError {
   #[error("Authentication failed.")]
@@ -67,6 +72,8 @@ impl ResponseError for PublishError {
   }
 }
 
+/// Publishes a newsletter to subscribers.
+/// This endpoint requires authentication due to the risk of abuse.
 #[tracing::instrument(
   name = "Publishing newsletter to confirmed subscribers",
   skip(body, pool, email_client, request),
@@ -118,6 +125,8 @@ struct Credentials {
   password: String,
 }
 
+/// Parses the header into user credentials, using Basic Authentication.
+/// https://en.wikipedia.org/wiki/Basic_access_authentication.
 fn basic_authentication(headers: &HeaderMap) -> Result<Credentials, anyhow::Error> {
   let header_value = headers
     .get("Authorization")

@@ -8,6 +8,8 @@ pub struct Parameters {
   subscription_token: String,
 }
 
+/// Endpoint is used for confirming that a potential subscriber wishes to receive newsletters.
+/// This endpoint is accessed by a user who clicked a confirmation link in an email we sent.
 #[tracing::instrument(name = "Confirm a pending subscriber", skip(parameters, pool))]
 pub async fn confirm(parameters: web::Query<Parameters>, pool: web::Data<PgPool>) -> HttpResponse {
   match get_subscriber_id_from_token(&pool, &parameters.subscription_token).await {
@@ -38,6 +40,7 @@ pub async fn confirm_subscriber(pool: &PgPool, subscriber_id: Uuid) -> Result<()
   }
 }
 
+/// Token is used to identify which user wishes to confirm their subscription.
 #[tracing::instrument(name = "Get subscriber_id from token", skip(subscription_token, pool))]
 pub async fn get_subscriber_id_from_token(
   pool: &PgPool,

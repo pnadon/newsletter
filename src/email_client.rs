@@ -58,6 +58,7 @@ impl EmailClient {
   }
 }
 
+/// Convenient method for "parsing" the configuration into the equivalent client.
 impl TryFrom<EmailClientSettings> for EmailClient {
   type Error = String;
 

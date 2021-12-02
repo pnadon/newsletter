@@ -2,6 +2,9 @@
 set -x
 set -eo pipefail
 
+# Sets up a local postgres instance so that we can develop locally against it.
+# Runs migrations as part of that setup.
+
 if ! [ -x "$(command -v psql)" ]; then
   echo >&2 "Error: `psql` is not installed."
   exit 1

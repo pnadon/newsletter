@@ -45,6 +45,9 @@ impl TryFrom<SubscribeFormData> for NewSubscriber {
   }
 }
 
+/// Marks a user as a potential subscriber, and sends them a confirmation email.
+/// Only after clicking the link in that email will they be confirmed subscribers.
+/// (Handling the confirmation is done by another endpoint)
 #[tracing::instrument(
     name = "Adding a new subscriber",
     skip(form, pool, email_client, base_url),
@@ -82,6 +85,9 @@ pub async fn subscribe(
   Ok(HttpResponse::Ok().finish())
 }
 
+/// Store a token which uniquelly identifies a subscriber.
+/// This is so that we know who is confirming their subscription
+/// when they click the link in the email and reach the confirmation endpoint.
 #[tracing::instrument(
   name = "Store subscription token in the database",
   skip(subscription_token, transaction)
@@ -117,6 +123,7 @@ impl std::fmt::Debug for SubscribeError {
   }
 }
 
+/// Maps the internal errors to HTTP error codes that the end user sees.
 impl ResponseError for SubscribeError {
   fn status_code(&self) -> StatusCode {
     match self {
@@ -159,6 +166,7 @@ pub fn error_chain_fmt(
   Ok(())
 }
 
+/// Sends a confirmation email so that a user can confirm they wish to subscribe.
 #[tracing::instrument(
   name = "Send a confirmation email to a new subscriber",
   skip(email_client, new_subscriber, base_url)
@@ -191,6 +199,7 @@ pub async fn send_confirmation_email(
     .await
 }
 
+/// Stores a potential subscriber into the database.
 #[tracing::instrument(
   name = "Saving new subscriber details in the database",
   skip(transaction, new_subscriber)

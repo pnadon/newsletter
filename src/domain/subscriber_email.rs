@@ -1,6 +1,7 @@
 use serde::Serialize;
 use validator::validate_email;
 
+/// Represents a valid email.
 #[derive(Debug, Clone, Serialize)]
 pub struct SubscriberEmail(String);
 

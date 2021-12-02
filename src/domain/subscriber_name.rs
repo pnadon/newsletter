@@ -1,13 +1,19 @@
 use unicode_segmentation::UnicodeSegmentation;
 
+/// Represents a valid username, with limits imposed as to prevent malicious activities / errors.
 #[derive(Debug)]
 pub struct SubscriberName(String);
 
 const FORBIDDEN_CHARACTERS: [char; 9] = ['/', '(', ')', '"', '<', '>', '\\', '{', '}'];
 
 impl SubscriberName {
+  /// Parses the string and returns either a valid SubscriberName, or a COLLECTION of errors.
+  /// Typically parsing is done until the first error is encountered, and then short circuits.
+  /// However, this isn't useful for the end user as they aren't aware of ALL of the issues at once.
+  /// This implementation is inspired by functionality given by the Cats Effect library for Scala.
+  /// https://typelevel.org/cats/datatypes/validated.html
   pub fn parse(s: String) -> Result<Self, Vec<String>> {
-    let validations = [
+    let errors = [
       (!s.trim().is_empty(), "name cannot be empty!"),
       (
         s.graphemes(true).count() <= 256,
@@ -22,10 +28,10 @@ impl SubscriberName {
     .filter_map(|(is_valid, error_msg)| Self::is_valid_to_maybe_err(is_valid, error_msg))
     .collect::<Vec<String>>();
 
-    if validations.is_empty() {
+    if errors.is_empty() {
       Ok(Self(s))
     } else {
-      Err(validations)
+      Err(errors)
     }
   }
 
