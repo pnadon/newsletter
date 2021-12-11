@@ -14,6 +14,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  APP_EMAIL_CLIENT__AUTHORIZATION_TOKEN: ''
+  APP_EMAIL_CLIENT__SENDER_EMAIL: 'test@example.com'
 
 jobs:
   test:
