@@ -11,6 +11,7 @@ pub struct Parameters {
 /// Endpoint is used for confirming that a potential subscriber wishes to receive newsletters.
 /// This endpoint is accessed by a user who clicked a confirmation link in an email we sent.
 #[tracing::instrument(name = "Confirm a pending subscriber", skip(parameters, pool))]
+#[allow(clippy::async_yields_async)]
 pub async fn confirm(parameters: web::Query<Parameters>, pool: web::Data<PgPool>) -> HttpResponse {
   match get_subscriber_id_from_token(&pool, &parameters.subscription_token).await {
     Ok(Some(subscriber_id)) => match confirm_subscriber(&pool, subscriber_id).await {
