@@ -79,7 +79,7 @@ jobs:
       - name: Run cargo test
         uses: actions-rs/cargo@v1
         with:
-          command: test -- --report-time
+          command: test
 
   fmt:
     name: Rustfmt
