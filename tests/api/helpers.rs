@@ -1,13 +1,13 @@
 use argon2::{password_hash::SaltString, Algorithm, Argon2, Params, PasswordHasher, Version};
-use once_cell::sync::Lazy;
-use sqlx::{Connection, Executor, PgConnection, PgPool};
-use uuid::Uuid;
-use wiremock::MockServer;
 use newsletter::{
   configuration::{get_configuration, DatabaseSettings},
   startup::ServerBuilder,
   telemetry::{get_subscriber, init_subscriber},
 };
+use once_cell::sync::Lazy;
+use sqlx::{Connection, Executor, PgConnection, PgPool};
+use uuid::Uuid;
+use wiremock::MockServer;
 
 // This ensures that the global logger is only configured and initialized once.
 pub static TRACING: Lazy<()> = Lazy::new(|| {
